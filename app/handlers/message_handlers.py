@@ -28,8 +28,6 @@ from app.middleware.antispam import AntiFloodMiddleware
 
 from config import *
 
-
-
 from aiogram import Bot, Dispatcher 
 from aiogram.types import BotCommand
 
