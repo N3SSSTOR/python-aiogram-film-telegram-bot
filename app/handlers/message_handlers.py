@@ -35,7 +35,6 @@ from app.handlers.callback_handlers import callback_router
 from app.handlers.inline_query_handlers import inline_query_router
 
 
-
 message_router = Router() 
 message_router.message.middleware(AntiFloodMiddleware())
 
@@ -43,56 +42,6 @@ message_router.message.middleware(AntiFloodMiddleware())
 @message_router.message(TokenStates.token)
 async def token(message: Message, state: FSMContext):
     await state.clear()
-    
-    user: User = User.get(
-        telegram_id=message.from_user.id  
-    )
-
-    Token.create(
-        telegram_token=message.text,
-        user_id=user.telegram_id
-    )
-
-    match user.lang:
-        case "RU":
-            await message.answer(
-                "Перейдите в @BotFather и введите команду /setinline для своего бота (введите любое значение)"
-            )
-
-        case "ENG":
-            await message.answer(
-                "Go to @BotFather and enter the command /setinline for your bot (enter any value)"
-            )
-
-    try:
-        # await asyncio.run(
-        #     run_user_bot(message.text)
-        # )
-
-        bot2 = Bot(
-            token=message.text,
-            parse_mode="HTML" 
-        )
-
-        dp2 = Dispatcher()
-        dp2.include_router(message_router)
-        dp2.include_router(callback_router)
-        dp2.include_router(inline_query_router)
-
-        bot_commands = [
-            BotCommand(command="/help", description="Инструкция 📄"),
-            BotCommand(command="/menu", description="Меню 📋"),
-            BotCommand(command="/find", description="Найти контент по тегам 🔍"),
-        ]
-        await bot2.set_my_commands(bot_commands)
-
-        await dp2.start_polling(bot2)
-
-    except Exception as ex:
-        print(ex)
-        await message.answer(
-            "Telegram Bad Request: Problems with token, bot raised error"
-        )
 
 
 @message_router.message(F.text == "Menu", StateFilter(None))
